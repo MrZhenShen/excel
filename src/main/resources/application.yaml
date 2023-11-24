@@ -2,7 +2,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
 
   datasource:
     driver-class-name: org.postgresql.Driver
@@ -13,4 +13,4 @@ spring:
       register-mbeans: true
 
 springdoc:
-  paths-to-match: /**, /itsu/edu/programming/excel/**
+  paths-to-match: /**, /itsu/edu/programming/excel/controller
