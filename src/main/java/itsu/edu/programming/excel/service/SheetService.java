@@ -9,5 +9,9 @@ public interface SheetService {
 
   Set<CellDto> getCellsBySheetId(long sheetId);
 
-  Set<Long> getAllSheetsId();
+  Set<Long> getAllId();
+
+  boolean existsById(long sheetId);
+
+  long create();
 }

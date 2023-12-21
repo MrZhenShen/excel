@@ -40,6 +40,6 @@ public class SheetController {
   @ResponseStatus(HttpStatus.OK)
   @GetMapping
   public Set<Long> getAllSheetsId() {
-    return sheetService.getAllSheetsId();
+    return sheetService.getAllId();
   }
 }

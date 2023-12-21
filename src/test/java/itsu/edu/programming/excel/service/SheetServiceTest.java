@@ -125,7 +125,7 @@ public class SheetServiceTest {
       when(sheetRepository.findAll()).thenReturn(sheets);
 
       // Act
-      Set<Long> result = sheetService.getAllSheetsId();
+      Set<Long> result = sheetService.getAllId();
 
       // Assert
       assertNotNull(result, "Result should not be null");
@@ -140,7 +140,7 @@ public class SheetServiceTest {
       when(sheetRepository.findAll()).thenReturn(Collections.emptyList());
 
       // Act
-      Set<Long> result = sheetService.getAllSheetsId();
+      Set<Long> result = sheetService.getAllId();
 
       // Assert
       assertNotNull(result, "Result should not be null");

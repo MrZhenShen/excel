@@ -5,9 +5,9 @@ import itsu.edu.programming.excel.exception.WebException;
 import itsu.edu.programming.excel.mapper.CellMapper;
 import itsu.edu.programming.excel.model.Sheet;
 import itsu.edu.programming.excel.repository.SheetRepository;
+import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.hibernate.Hibernate;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
@@ -24,14 +24,11 @@ public class SheetServiceImpl implements SheetService {
   private CellMapper cellMapper;
 
   @Override
+  @Transactional
   public Set<CellDto> getCellsBySheetId(long sheetId) {
     Sheet sheet = sheetRepository
             .findById(sheetId)
-            .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Sheet is missing"));
-
-    if (!Hibernate.isInitialized(sheet.getCells())) {
-      Hibernate.initialize(sheet.getCells());
-    }
+            .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Sheet is not found"));
 
     return sheet
             .getCells()
@@ -41,11 +38,21 @@ public class SheetServiceImpl implements SheetService {
   }
 
   @Override
-  public Set<Long> getAllSheetsId() {
+  public Set<Long> getAllId() {
     return sheetRepository
             .findAll()
             .stream()
             .map(Sheet::getId)
             .collect(Collectors.toSet());
+  }
+
+  @Override
+  public boolean existsById(long sheetId) {
+    return sheetRepository.existsById(sheetId);
+  }
+
+  @Override
+  public long create() {
+    return sheetRepository.save(new Sheet()).getId();
   }
 }
