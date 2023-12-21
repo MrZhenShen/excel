@@ -2,7 +2,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: create
+      ddl-auto: update
 
   datasource:
     driver-class-name: org.postgresql.Driver
