@@ -53,7 +53,7 @@ public class CellServiceTest {
       // Act, Assert
       WebException exception = assertThrows(
               WebException.class,
-              () -> cellService.getCellContent(1L, cellId),
+              () -> cellService.getCellContent(1, cellId),
               "Cell id should be illegal"
       );
       assertEquals(
@@ -71,7 +71,7 @@ public class CellServiceTest {
     })
     void Should_Success_When_CellIDIsMatchCellPattern(String cellId, String columnIndex, long rowIndex) {
       // Arrange
-      long sheetId = 1L;
+      int sheetId = 1;
 
       Cell cell = new Cell();
       cell.setValue("1");

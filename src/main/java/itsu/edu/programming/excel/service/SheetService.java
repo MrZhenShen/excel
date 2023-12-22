@@ -2,15 +2,11 @@ package itsu.edu.programming.excel.service;
 
 import itsu.edu.programming.excel.dto.CellDto;
 
-import java.util.Set;
+import java.util.List;
 
 public interface SheetService {
 
-  Set<CellDto> getCellsBySheetId(long sheetId);
+  List<CellDto> getCellsBySheetId(int sheetId);
 
-  Set<Long> getAllId();
-
-  boolean existsById(long sheetId);
-
-  long create();
+  List<Integer> getAllId();
 }

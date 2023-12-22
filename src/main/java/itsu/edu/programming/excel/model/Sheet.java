@@ -12,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.ToString;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Entity(name = "sheet")
@@ -24,7 +25,7 @@ public class Sheet {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
-  private long id;
+  private int id;
 
   @OneToMany(fetch = FetchType.LAZY, mappedBy = "sheet")
   @ToString.Exclude
@@ -32,17 +33,17 @@ public class Sheet {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) {
-      return true;
-    }
-    if (!(o instanceof Sheet sheet)) {
-      return false;
-    }
-    return id == sheet.id;
+    if (this == o) return true;
+    if (!(o instanceof Sheet sheet)) return false;
+
+    if (id != sheet.id) return false;
+    return Objects.equals(cells, sheet.cells);
   }
 
   @Override
   public int hashCode() {
-    return (int) (id ^ (id >>> 32));
+    int result = id;
+    result = 31 * result + (cells != null ? cells.hashCode() : 0);
+    return result;
   }
 }

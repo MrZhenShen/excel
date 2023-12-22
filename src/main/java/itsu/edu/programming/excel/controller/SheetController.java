@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itsu.edu.programming.excel.dto.CellDto;
-import itsu.edu.programming.excel.service.SheetService;
+import itsu.edu.programming.excel.service.XSSFServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.Set;
+import java.util.List;
 
 @Tag(name = "Sheet")
 @RestController
@@ -23,7 +23,7 @@ import java.util.Set;
 @AllArgsConstructor
 public class SheetController {
 
-  private SheetService sheetService;
+  private XSSFServiceImpl sheetService;
 
   @Operation(summary = "Get all cells from sheet")
   @ResponseStatus(HttpStatus.OK)
@@ -32,14 +32,14 @@ public class SheetController {
           @ApiResponse(responseCode = "404", description = "Sheet is not found")
   })
   @PostMapping("/{sheetId}")
-  public Set<CellDto> getAllCellBySheet(@RequestParam long sheetId) {
+  public List<CellDto> getAllCellBySheet(@RequestParam int sheetId) {
     return sheetService.getCellsBySheetId(sheetId);
   }
 
   @Operation(summary = "Get all sheet IDs")
   @ResponseStatus(HttpStatus.OK)
   @GetMapping
-  public Set<Long> getAllSheetsId() {
+  public List<Integer> getAllSheetsId() {
     return sheetService.getAllId();
   }
 }

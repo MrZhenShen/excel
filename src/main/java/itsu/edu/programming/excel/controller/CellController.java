@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itsu.edu.programming.excel.dto.CellContentDto;
-import itsu.edu.programming.excel.service.CellService;
+import itsu.edu.programming.excel.service.XSSFServiceImpl;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CellController {
 
-  private CellService cellService;
+  private XSSFServiceImpl cellService;
 
   @Operation(summary = "Get cell")
   @ResponseStatus(HttpStatus.OK)
@@ -32,7 +32,7 @@ public class CellController {
           @ApiResponse(responseCode = "404", description = "Cell not found")
   })
   @GetMapping("/{sheetId}/{cellId}")
-  public CellContentDto getCell(@PathVariable("sheetId") long sheetId, @PathVariable("cellId") String cellId) {
+  public CellContentDto getCell(@PathVariable("sheetId") int sheetId, @PathVariable("cellId") String cellId) {
     return cellService.getCellContent(sheetId, cellId);
   }
 
@@ -45,13 +45,12 @@ public class CellController {
   })
   @PostMapping("/{sheetId}/{cellId}")
   public CellContentDto setValueToCell(
-          @PathVariable("sheetId") long sheetId,
+          @PathVariable("sheetId") int sheetId,
           @PathVariable("cellId") String cellId,
-          @RequestParam(required = false) String value) {
-    if (value == null) {
-      return cellService.clearCell(sheetId, cellId);
-    } else if (value.isBlank() || value.isEmpty()) {
-      return cellService.clearCell(sheetId, cellId);
+          @RequestParam(required = false) Object value) {
+    if (value == null || ((String) value).isBlank() || ((String) value).isEmpty()) {
+      cellService.clearCell(sheetId, cellId);
+      return null;
     } else {
       return cellService.setCellValue(sheetId, cellId, value);
     }

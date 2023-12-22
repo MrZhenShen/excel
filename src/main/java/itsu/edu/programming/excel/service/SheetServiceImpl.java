@@ -17,42 +17,42 @@ import java.util.stream.Collectors;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class SheetServiceImpl implements SheetService {
+public class SheetServiceImpl {
 
   private SheetRepository sheetRepository;
 
   private CellMapper cellMapper;
 
-  @Override
-  @Transactional
-  public Set<CellDto> getCellsBySheetId(long sheetId) {
-    Sheet sheet = sheetRepository
-            .findById(sheetId)
-            .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Sheet is not found"));
-
-    return sheet
-            .getCells()
-            .stream()
-            .map(cellMapper::cellToCellDto)
-            .collect(Collectors.toSet());
-  }
-
-  @Override
-  public Set<Long> getAllId() {
-    return sheetRepository
-            .findAll()
-            .stream()
-            .map(Sheet::getId)
-            .collect(Collectors.toSet());
-  }
-
-  @Override
-  public boolean existsById(long sheetId) {
-    return sheetRepository.existsById(sheetId);
-  }
-
-  @Override
-  public long create() {
-    return sheetRepository.save(new Sheet()).getId();
-  }
+//  @Override
+//  @Transactional
+//  public Set<CellDto> getCellsBySheetId(long sheetId) {
+//    Sheet sheet = sheetRepository
+//            .findById(sheetId)
+//            .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Sheet is not found"));
+//
+//    return sheet
+//            .getCells()
+//            .stream()
+//            .map(cellMapper::cellToCellDto)
+//            .collect(Collectors.toSet());
+//  }
+//
+//  @Override
+//  public Set<Long> getAllId() {
+//    return sheetRepository
+//            .findAll()
+//            .stream()
+//            .map(Sheet::getId)
+//            .collect(Collectors.toSet());
+//  }
+//
+//  @Override
+//  public boolean existsById(long sheetId) {
+//    return sheetRepository.existsById(sheetId);
+//  }
+//
+//  @Override
+//  public long create() {
+//    return sheetRepository.save(new Sheet()).getId();
+//  }
 }
