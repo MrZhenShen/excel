@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itsu.edu.programming.excel.dto.CellContentDto;
-import itsu.edu.programming.excel.service.apache.ApacheCellService;
+import itsu.edu.programming.excel.service.CellService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 @AllArgsConstructor
 public class CellController {
 
-  private ApacheCellService cellService;
+  private CellService cellService;
 
   @Operation(summary = "Get cell")
   @ResponseStatus(HttpStatus.OK)

@@ -1,17 +1,3 @@
-spring:
-
-  jpa:
-    hibernate:
-      ddl-auto: update
-
-  datasource:
-    driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/postgres?stringtype=unspecified
-    username: postgres
-    password: postgres
-    hikari:
-      register-mbeans: true
-
 springdoc:
   paths-to-match: /**, /itsu/edu/programming/excel/controller
 
