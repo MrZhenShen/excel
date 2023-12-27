@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import itsu.edu.programming.excel.dto.CellDto;
-import itsu.edu.programming.excel.service.apache.ApacheSheetService;
+import itsu.edu.programming.excel.service.SheetService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +22,7 @@ import java.util.List;
 @AllArgsConstructor
 public class SheetController {
 
-  private ApacheSheetService sheetService;
+  private SheetService sheetService;
 
   @Operation(summary = "Get all cells from sheet")
   @ResponseStatus(HttpStatus.OK)
