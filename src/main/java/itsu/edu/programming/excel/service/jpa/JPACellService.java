@@ -1,4 +1,4 @@
-package itsu.edu.programming.excel.service;
+package itsu.edu.programming.excel.service.jpa;
 
 import itsu.edu.programming.excel.dto.CellContentDto;
 import itsu.edu.programming.excel.exception.InvalidCellIdException;
@@ -7,14 +7,13 @@ import itsu.edu.programming.excel.exception.WebException;
 import itsu.edu.programming.excel.mapper.CellMapper;
 import itsu.edu.programming.excel.model.Cell;
 import itsu.edu.programming.excel.repository.CellRepository;
+import itsu.edu.programming.excel.service.CellService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
@@ -27,15 +26,15 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CellServiceImpl implements CellService {
+public class JPACellService implements CellService {
 
   public static final Pattern CELL_ID_PATTERN = Pattern.compile("([A-Za-z]+)(\\S+)");
   public static final Pattern ARITHMETIC_OPERATION_PATTERN = Pattern.compile("[=+\\-*/]");
 
   public static final String ERROR_RESULT = "<ERROR>";
 
-  public static final Pattern DIGIT_CELL_INDEX_PATTERN = Pattern.compile(".*\\d.*");
-  public static final Pattern CHAR_CELL_INDEX_PATTERN = Pattern.compile(".*[A-Za-z].*");
+  public static final Pattern ANYTHING_AROUND_DIGIT_CELL_INDEX_PATTERN = Pattern.compile(".*\\d.*");
+  public static final Pattern ANYTHING_AROUND_CHAR_CELL_INDEX_PATTERN = Pattern.compile(".*[A-Za-z].*");
 
   public static final int CHAR_GROUP_INDEX = 1;
   public static final int NUMBERS_GROUP_INDEX = 2;
@@ -87,25 +86,11 @@ public class CellServiceImpl implements CellService {
     return cellMapper.cellToCellContentDto(cellRepository.save(cell));
   }
 
-  private static double evaluateExpression(String expression) throws ScriptException {
-    ScriptEngineManager manager = new ScriptEngineManager();
-    ScriptEngine engine = manager.getEngineByName("js");
-
-    // Replace the leading "=" with an empty string to make the expression valid
-    String cleanedExpression = expression.replace("=", "");
-
-    // Evaluate the expression
-    Object evalResult = engine.eval(cleanedExpression);
-
-    // Convert the result to a double
-    return Double.parseDouble(evalResult.toString());
-  }
-
   private String processValueToResult(String value, long sheetId) throws ScriptException {
     value = value.trim();
     if (isFormula(value)) {
       try {
-        return String.valueOf(evaluateExpression(parseFormula(value, sheetId)));
+        return parseFormula(value, sheetId);
       } catch (InvalidFormulaException e) {
         log.error("{}", e.getMessage());
         return ERROR_RESULT;
@@ -147,15 +132,10 @@ public class CellServiceImpl implements CellService {
   }
 
   private static boolean isValidCellIndex(String letters, String numbers) {
-    return !DIGIT_CELL_INDEX_PATTERN.matcher(letters).matches() && !CHAR_CELL_INDEX_PATTERN.matcher(numbers).matches();
+    return !ANYTHING_AROUND_DIGIT_CELL_INDEX_PATTERN.matcher(letters).matches() &&
+            !ANYTHING_AROUND_CHAR_CELL_INDEX_PATTERN.matcher(numbers).matches();
   }
 
-  /**
-   * @param formula
-   * @param sheetId
-   * @return parsedFormula
-   * @Description Replaces "=A1+A2" with "=0+1" based on the current sheet values
-   */
   private String parseFormula(String formula, long sheetId) throws InvalidFormulaException {
     return createFormula(
             parseValues(sheetId, getValues(formula)),
