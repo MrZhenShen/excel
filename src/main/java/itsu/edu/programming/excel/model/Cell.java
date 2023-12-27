@@ -45,12 +45,12 @@ public class Cell {
   @Override
   public boolean equals(Object o) {
     if (this == o) return true;
-    if (!(o instanceof Cell cell)) return false;
+    if (!(o instanceof Cell Cell)) return false;
 
-    if (rowIndex != cell.rowIndex) return false;
-    if (columnIndex != null ? !columnIndex.equals(cell.columnIndex) : cell.columnIndex != null) return false;
-    if (sheet != null ? !sheet.equals(cell.sheet) : cell.sheet != null) return false;
-    return Objects.equals(value, cell.value);
+    if (rowIndex != Cell.rowIndex) return false;
+    if (columnIndex != null ? !columnIndex.equals(Cell.columnIndex) : Cell.columnIndex != null) return false;
+    if (sheet != null ? !sheet.equals(Cell.sheet) : Cell.sheet != null) return false;
+    return Objects.equals(value, Cell.value);
   }
 
   @Override

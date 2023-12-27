@@ -18,6 +18,7 @@
 		<mapstruct.version>1.5.3.Final</mapstruct.version>
 		<pmd.version>3.21.2</pmd.version>
 		<openapi.version>2.2.0</openapi.version>
+		<apache-poi.version>5.2.2</apache-poi.version>
 	</properties>
 	<dependencies>
 		<dependency>
@@ -35,6 +36,10 @@
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-data-jpa</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-starter-aop</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.mapstruct</groupId>
@@ -62,6 +67,11 @@
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-test</artifactId>
 			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.poi</groupId>
+			<artifactId>poi-ooxml</artifactId>
+			<version>${apache-poi.version}</version>
 		</dependency>
 	</dependencies>
 

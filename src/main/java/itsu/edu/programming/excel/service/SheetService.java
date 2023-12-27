@@ -1,16 +1,19 @@
 package itsu.edu.programming.excel.service;
 
 import itsu.edu.programming.excel.dto.CellDto;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 
-import java.util.Set;
+import java.util.List;
 
 public interface SheetService {
 
-  Set<CellDto> getCellsBySheetId(long sheetId);
+  List<CellDto> getSheetCells(int sheetId);
 
-  Set<Long> getAllId();
+  List<Integer> getAllId();
 
-  boolean existsById(long sheetId);
+  XSSFSheet getSheet(int sheetId);
 
-  long create();
+  XSSFSheet getOrCreateSheet(int sheetId);
+
+  XSSFSheet createSheet();
 }

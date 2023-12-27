@@ -4,9 +4,9 @@ import itsu.edu.programming.excel.dto.CellContentDto;
 
 public interface CellService {
 
-  CellContentDto getCellContent(long sheetId, String cellId);
+  CellContentDto getCellContent(int sheetId, String cellId);
 
-  CellContentDto setCellValue(long sheetId, String cellId, String value);
+  CellContentDto setCellValue(int sheetId, String cellId, Object value);
 
-  CellContentDto clearCell(long sheetId, String cellId);
+  void clearCell(int sheetId, String cellId);
 }

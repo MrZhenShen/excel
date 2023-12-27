@@ -5,8 +5,8 @@ import itsu.edu.programming.excel.exception.WebException;
 import itsu.edu.programming.excel.mapper.CellMapper;
 import itsu.edu.programming.excel.model.Cell;
 import itsu.edu.programming.excel.repository.CellRepository;
+import itsu.edu.programming.excel.service.jpa.JPACellService;
 import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.CsvSource;
@@ -31,7 +31,7 @@ import static org.mockito.Mockito.when;
 public class CellServiceTest {
 
   @InjectMocks
-  private CellServiceImpl cellService;
+  private JPACellService cellService;
 
   @Mock
   private CellRepository cellRepository;
@@ -53,7 +53,7 @@ public class CellServiceTest {
       // Act, Assert
       WebException exception = assertThrows(
               WebException.class,
-              () -> cellService.getCellContent(1L, cellId),
+              () -> cellService.getCellContent(1, cellId),
               "Cell id should be illegal"
       );
       assertEquals(
@@ -71,14 +71,14 @@ public class CellServiceTest {
     })
     void Should_Success_When_CellIDIsMatchCellPattern(String cellId, String columnIndex, long rowIndex) {
       // Arrange
-      long sheetId = 1L;
+      int sheetId = 1;
 
-      Cell cell = new Cell();
-      cell.setValue("1");
-      cell.setResult("1");
+      Cell Cell = new Cell();
+      Cell.setValue("1");
+      Cell.setResult("1");
 
-      when(cellRepository.findByColumnIndexAndRowIndexAndSheetId(columnIndex, rowIndex, sheetId)).thenReturn(Optional.of(cell));
-      when(cellMapper.cellToCellContentDto(cell)).thenReturn(new CellContentDto(cell.getValue(), cell.getResult()));
+      when(cellRepository.findByColumnIndexAndRowIndexAndSheetId(columnIndex, rowIndex, sheetId)).thenReturn(Optional.of(Cell));
+      when(cellMapper.cellToCellContentDto(Cell)).thenReturn(new CellContentDto(Cell.getValue(), Cell.getResult()));
 
       // Act
       CellContentDto result = cellService.getCellContent(sheetId, cellId);
@@ -88,7 +88,7 @@ public class CellServiceTest {
       assertEquals("1", result.value(), "Cell value is not correct");
 
       verify(cellRepository, times(1)).findByColumnIndexAndRowIndexAndSheetId(columnIndex, rowIndex, sheetId);
-      verify(cellMapper, times(1)).cellToCellContentDto(cell);
+      verify(cellMapper, times(1)).cellToCellContentDto(Cell);
     }
   }
 

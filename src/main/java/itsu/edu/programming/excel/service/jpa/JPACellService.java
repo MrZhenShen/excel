@@ -1,4 +1,4 @@
-package itsu.edu.programming.excel.service;
+package itsu.edu.programming.excel.service.jpa;
 
 import itsu.edu.programming.excel.dto.CellContentDto;
 import itsu.edu.programming.excel.exception.InvalidCellIdException;
@@ -7,12 +7,14 @@ import itsu.edu.programming.excel.exception.WebException;
 import itsu.edu.programming.excel.mapper.CellMapper;
 import itsu.edu.programming.excel.model.Cell;
 import itsu.edu.programming.excel.repository.CellRepository;
+import itsu.edu.programming.excel.service.CellService;
 import jakarta.transaction.Transactional;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import javax.script.ScriptException;
 import java.util.ArrayDeque;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,15 +26,15 @@ import java.util.regex.Pattern;
 @Service
 @Slf4j
 @AllArgsConstructor
-public class CellServiceImpl implements CellService {
+public class JPACellService implements CellService {
 
   public static final Pattern CELL_ID_PATTERN = Pattern.compile("([A-Za-z]+)(\\S+)");
   public static final Pattern ARITHMETIC_OPERATION_PATTERN = Pattern.compile("[=+\\-*/]");
 
   public static final String ERROR_RESULT = "<ERROR>";
 
-  public static final Pattern DIGIT_CELL_INDEX_PATTERN = Pattern.compile(".*\\d.*");
-  public static final Pattern CHAR_CELL_INDEX_PATTERN = Pattern.compile(".*[A-Za-z].*");
+  public static final Pattern ANYTHING_AROUND_DIGIT_CELL_INDEX_PATTERN = Pattern.compile(".*\\d.*");
+  public static final Pattern ANYTHING_AROUND_CHAR_CELL_INDEX_PATTERN = Pattern.compile(".*[A-Za-z].*");
 
   public static final int CHAR_GROUP_INDEX = 1;
   public static final int NUMBERS_GROUP_INDEX = 2;
@@ -42,7 +44,7 @@ public class CellServiceImpl implements CellService {
   private CellMapper cellMapper;
 
   @Override
-  public CellContentDto getCellContent(long sheetId, String cellId) {
+  public CellContentDto getCellContent(int sheetId, String cellId) {
     return cellMapper
             .cellToCellContentDto(findCell(sheetId, cellId)
                     .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Cell is not found"))
@@ -68,18 +70,23 @@ public class CellServiceImpl implements CellService {
 
   @Override
   @Transactional
-  public CellContentDto setCellValue(long sheetId, String cellId, String value) {
-
+  public CellContentDto setCellValue(int sheetId, String cellId, Object object) {
+    String value = (String) object;
     Cell cell = findCell(sheetId, cellId)
             .orElseThrow(() -> new WebException(HttpStatus.NOT_FOUND, "Cell is not found"));
 
     cell.setValue(value);
-    cell.setResult(processValueToResult(value, sheetId));
+    try {
+      cell.setResult(processValueToResult(value, sheetId));
+    } catch (ScriptException e) {
+      log.error("{}", e.getMessage());
+      cell.setResult(ERROR_RESULT);
+    }
 
     return cellMapper.cellToCellContentDto(cellRepository.save(cell));
   }
 
-  private String processValueToResult(String value, long sheetId) {
+  private String processValueToResult(String value, long sheetId) throws ScriptException {
     value = value.trim();
     if (isFormula(value)) {
       try {
@@ -94,7 +101,7 @@ public class CellServiceImpl implements CellService {
   }
 
   @Override
-  public CellContentDto clearCell(long sheetId, String cellId) {
+  public void clearCell(int sheetId, String cellId) {
     String[] parsedCellId;
     try {
       parsedCellId = parseCellId(cellId);
@@ -108,7 +115,6 @@ public class CellServiceImpl implements CellService {
             Long.parseLong(parsedCellId[CHAR_GROUP_INDEX]), sheetId
     );
     cellOptional.ifPresent(cell -> cellRepository.delete(cell));
-    return null;
   }
 
   private static String[] parseCellId(String cellId) throws InvalidCellIdException {
@@ -126,29 +132,10 @@ public class CellServiceImpl implements CellService {
   }
 
   private static boolean isValidCellIndex(String letters, String numbers) {
-    return !DIGIT_CELL_INDEX_PATTERN.matcher(letters).matches() && !CHAR_CELL_INDEX_PATTERN.matcher(numbers).matches();
+    return !ANYTHING_AROUND_DIGIT_CELL_INDEX_PATTERN.matcher(letters).matches() &&
+            !ANYTHING_AROUND_CHAR_CELL_INDEX_PATTERN.matcher(numbers).matches();
   }
 
-//  private String calculateResult(String sheetId, String formula) {
-//      ScriptEngineManager manager = new ScriptEngineManager();
-//        ScriptEngine engine = manager.getEngineByName("js");
-
-//    try {
-//      Object result = engine.eval(parseFormula(sheetId, formula));
-//      log.info("{}", result);
-//      return (String) result;
-//    } catch (ScriptException e) {
-//      log.error("{}", e.getMessage());
-//      return "<ERROR>";
-//    }
-//  }
-
-  /**
-   * @param formula
-   * @param sheetId
-   * @return parsedFormula
-   * @Description Replaces "=A1+A2" with "=0+1" based on the current sheet values
-   */
   private String parseFormula(String formula, long sheetId) throws InvalidFormulaException {
     return createFormula(
             parseValues(sheetId, getValues(formula)),
@@ -183,9 +170,9 @@ public class CellServiceImpl implements CellService {
       try {
         String[] parsedCellId = parseCellId(value);
         Optional<Cell> cellOptional = cellRepository.findByColumnIndexAndRowIndexAndSheetId(
-                        parsedCellId[0],
-                        Long.parseLong(parsedCellId[CHAR_GROUP_INDEX]), sheetId
-                );
+                parsedCellId[0],
+                Long.parseLong(parsedCellId[CHAR_GROUP_INDEX]), sheetId
+        );
 
         if (cellOptional.isPresent()) {
           parsedValues.add(cellOptional.get().getResult());
