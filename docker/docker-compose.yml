@@ -2,15 +2,13 @@ version: "3.8"
 
 services:
   itsu-excel:
-    image: itsu-excel:latest
+    image: mrzhenshen/itsu-excel:latest
     container_name: itsu-excel
     build:
       context: ..
       dockerfile: docker/Dockerfile
     ports:
       - "8080:8080"
-    environment:
-      SPRING_PROFILES_ACTIVE: docker
     restart: always
     healthcheck:
       test: curl --fail http://localhost:8080/actuator/health || exit 1
