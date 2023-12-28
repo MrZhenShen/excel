@@ -3,4 +3,7 @@ springdoc:
 
 excel:
   file:
-    location: src/main/resources/static/Book1.xlsx
+    location: ${WORKBOOK_LOCATION:src/main/resources/workbook.xlsx}
+
+server:
+  port: ${PORT:8080}

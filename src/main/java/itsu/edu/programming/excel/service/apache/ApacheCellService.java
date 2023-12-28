@@ -26,9 +26,17 @@ public class ApacheCellService implements CellService {
   @Override
   public CellContentDto getCellContent(int sheetId, String cellId) {
     CellReference cellReference = getCellReference(cellId);
-    XSSFCell cell = apacheSheetService.getSheet(sheetId)
-            .getRow(cellReference.getRow())
-            .getCell(cellReference.getCol());
+
+    XSSFSheet sheet = apacheSheetService.getSheet(sheetId);
+
+    XSSFRow row = sheet.getRow(cellReference.getRow());
+    if (row == null) {
+      throw new WebException(HttpStatus.NOT_FOUND, String.format("Cell 'id:%s' is not found", cellId));
+    }
+    XSSFCell cell = row.getCell(cellReference.getCol());
+    if (cell == null) {
+      throw new WebException(HttpStatus.NOT_FOUND, String.format("Cell 'id:%s' is not found", cellId));
+    }
 
     return getCellContent(cell);
   }

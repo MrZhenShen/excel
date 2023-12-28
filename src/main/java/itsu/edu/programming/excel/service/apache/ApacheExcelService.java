@@ -36,11 +36,15 @@ public class ApacheExcelService implements ExcelService {
   public XSSFWorkbook getExcel() {
     try (FileInputStream inputStream = new FileInputStream(excelProperties.getFile().getLocation())) {
       excel = new XSSFWorkbook(inputStream);
-      return excel;
     } catch (IOException e) {
       log.error("{}", e.getMessage());
-      throw new WebException(HttpStatus.INTERNAL_SERVER_ERROR, e.getMessage());
+      log.warn("Start creating new workbook");
+      excel = new XSSFWorkbook();
+      excel.createSheet();
+      write();
     }
+
+    return excel;
   }
 
   @Override

@@ -19,7 +19,5 @@ public class ExcelAspect {
           "|| execution(* itsu.edu.programming.excel.service.apache.ApacheCellService.set*(..))")
   public void afterCellChanges() {
     excelService.write();
-
-    log.info("Excel was written");
   }
 }

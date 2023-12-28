@@ -1,5 +1,9 @@
 FROM openjdk:21
 
-COPY /target/*.jar app.jar
+EXPOSE 8080
+
+ENV WORKBOOK_LOCATION=/tmp/workbook.xlsx
+
+COPY ../target/*.jar app.jar
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
